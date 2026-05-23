@@ -382,17 +382,9 @@
       position: relative;
     }
 
-    .PFooter .PLogo {
-      position: absolute;
-      left: 8px;
-      width: 18px;
-      height: 18px;
-      object-fit: contain;
-    }
-
     .PFooter .PBuild {
       position: absolute;
-      left: 32px;
+      left: 10px;
       font-size: 11px;
       font-weight: 300;
       color: #fff;
@@ -637,10 +629,8 @@
           <div class="tab-highlight" id="tabHighlight"></div>
           <div id="tabList"></div>
         </div>
-        <!-- FOOTER LOGO: replace footerLogo src (18×18 px or larger, square PNG) -->
         <div class="PFooter">
-          <img class="PLogo" id="footerLogo" src="" alt="" />
-          <span class="PBuild" id="footerBuild">CMG Menu</span>
+          <span class="PBuild" id="footerBuild">CMG BYPASS</span>
           <span class="PIndicator" id="footerIndicator">(0/0)</span>
         </div>
       </div>
@@ -683,7 +673,7 @@
       path: ["CMG"],
       categories: null,
       categoryIndex: 0,
-      username: "CMG",
+      username: "CMG BYPASS",
       scrollOffset: 0,
       maxVisible: 9,
       banner: {
@@ -908,7 +898,7 @@
     }
 
     function render() {
-      $("footerBuild").textContent = state.username || "CMG";
+      $("footerBuild").textContent = state.username || "CMG BYPASS";
       renderCategories();
       scrollToIndex(state.index);
       renderTabs();
