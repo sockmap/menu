@@ -56,7 +56,7 @@
     .PElements {
       display: flex;
       flex-direction: row;
-      align-items: flex-start;
+      align-items: stretch;
       gap: 0.35vw;
     }
 
@@ -70,7 +70,7 @@
       background: rgba(5, 5, 5, 0.9);
       border-radius: 4px;
       box-shadow: inset 0 0 4px rgba(0,0,0,0.8), 0 0 6px rgba(0,0,0,0.5);
-      align-self: flex-start;
+      align-self: stretch;
       justify-content: space-between;
     }
 
@@ -131,8 +131,9 @@
       height: 28px;
       margin-bottom: 4px;
       background: rgb(var(--menu-surface));
-      border: 1px solid rgba(var(--menu-color-dark), 0.45);
-      border-radius: 0 0 6px 6px;
+      border: 1px solid rgba(var(--menu-color-dark), 0.35);
+      border-top: none;
+      border-radius: 0 0 8px 8px;
       overflow: hidden;
     }
 
@@ -150,20 +151,23 @@
       background: linear-gradient(0deg, rgba(var(--menu-color), 0.42) 0%, rgba(var(--menu-color-dark), 0.12) 100%);
     }
 
-    .PCategory.solo {
+    .PCategory.solo,
+    .PCategory.solo.active {
       flex: 1;
       width: 100%;
       justify-content: center;
       padding-left: 0;
       text-align: center;
       font-size: 11px;
+      background: transparent;
+      box-shadow: none;
     }
 
     .PTabs {
       position: relative;
       width: 100%;
       background: rgba(var(--menu-surface-2), 0.88);
-      border-radius: 6px;
+      border-radius: 0;
       overflow: hidden;
     }
 
@@ -901,19 +905,21 @@
 
       const tabs = $("tabs");
       const scroll = $("pScroll");
+      const right = document.querySelector(".PRightElements");
 
       if (height > 0) {
         tabs.style.height = height + "px";
         tabs.style.minHeight = height + "px";
         tabs.style.maxHeight = height + "px";
-        scroll.style.height = height + "px";
-        scroll.style.minHeight = height + "px";
       } else {
         tabs.style.height = "auto";
         tabs.style.minHeight = "0";
         tabs.style.maxHeight = "none";
-        scroll.style.height = "auto";
-        scroll.style.minHeight = "0";
+      }
+
+      if (right && scroll) {
+        scroll.style.height = right.offsetHeight + "px";
+        scroll.style.minHeight = right.offsetHeight + "px";
       }
     }
 
@@ -1014,6 +1020,7 @@
       updateScrollBar();
       updatePanelHeights();
       requestAnimationFrame(function () {
+        updatePanelHeights();
         updateHighlight();
         updateMetadataPosition();
       });
