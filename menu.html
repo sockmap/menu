@@ -442,33 +442,51 @@
       line-height: 1.4;
     }
 
+    #toasts,
     .NotificationsWrapper {
       position: fixed;
       bottom: 1.2vw;
       right: 1.2vw;
-      display: flex;
-      flex-direction: column-reverse;
-      align-items: flex-end;
-      gap: 6px;
+      display: block;
       z-index: 9999;
       pointer-events: none;
+      background: none !important;
+      background-color: transparent !important;
+      border: none;
+      box-shadow: none;
+      width: auto;
+      height: auto;
+      min-width: 0;
+      min-height: 0;
+      padding: 0;
+      margin: 0;
+      text-align: right;
     }
 
     .Notification {
-      width: fit-content;
-      max-width: 200px;
-      background: rgba(var(--menu-surface-2), 0.94);
-      border: 1px solid rgba(var(--menu-color), 0.42);
-      border-radius: 4px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+      display: inline-block;
+      width: auto;
+      max-width: 220px;
+      margin-top: 4px;
+      text-align: left;
+      background: rgba(22, 20, 14, 0.72);
+      border: 1px solid rgba(var(--menu-color), 0.32);
+      border-radius: 2px;
+      box-shadow: none;
       color: rgb(var(--menu-text));
-      animation: notifIn 0.22s ease forwards;
+      animation: notifIn 0.18s ease forwards;
       position: relative;
       overflow: hidden;
+      vertical-align: top;
+      line-height: 1;
     }
 
     .NotificationInner {
-      padding: 6px 10px 7px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 7px;
+      min-height: 0;
       border-left: 2px solid rgb(var(--menu-color));
     }
 
@@ -489,12 +507,13 @@
     }
 
     .NotificationTitle {
-      font-size: 9px;
+      font-size: 8px;
       font-weight: 600;
-      letter-spacing: 0.08em;
-      line-height: 1.2;
+      letter-spacing: 0.06em;
+      line-height: 1;
       color: rgb(var(--menu-color-bright));
       text-transform: uppercase;
+      flex-shrink: 0;
     }
 
     .Notification.error .NotificationTitle { color: rgb(var(--menu-error)); }
@@ -502,12 +521,14 @@
     .Notification.warning .NotificationTitle { color: rgb(255, 196, 110); }
 
     .NotificationDesc {
-      font-size: 10px;
+      font-size: 8px;
       font-weight: 300;
-      line-height: 1.25;
+      line-height: 1;
       color: rgba(var(--menu-text), 0.88);
-      margin-top: 2px;
+      margin: 0;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .NotificationProgress {
@@ -515,21 +536,21 @@
       left: 0;
       bottom: 0;
       height: 1px;
-      background: rgb(var(--menu-color-bright));
+      width: 100%;
+      background: rgba(var(--menu-color-bright), 0.6);
       animation: notifProgress linear forwards;
-      opacity: 0.7;
     }
 
     .Notification.error .NotificationProgress {
-      background: rgb(var(--menu-error));
+      background: rgba(var(--menu-error), 0.85);
     }
 
     .Notification.info .NotificationProgress {
-      background: rgb(var(--menu-info));
+      background: rgba(var(--menu-info), 0.85);
     }
 
     .Notification.warning .NotificationProgress {
-      background: rgb(255, 196, 110);
+      background: rgba(255, 196, 110, 0.85);
     }
 
     @keyframes notifIn {
@@ -997,14 +1018,16 @@
     function showNotification(data) {
       const n = document.createElement("div");
       n.className = "Notification " + (data.type || "info");
+      n.style.display = "inline-block";
+      n.style.width = "auto";
       const dur = data.duration || 3000;
       n.innerHTML =
         '<div class="NotificationInner">' +
-        '<div class="NotificationTitle">' +
+        '<span class="NotificationTitle">' +
         (data.title || "") +
-        '</div><div class="NotificationDesc">' +
+        '</span><span class="NotificationDesc">' +
         (data.desc || "") +
-        "</div></div>" +
+        "</span></div>" +
         '<div class="NotificationProgress" style="animation-duration:' +
         dur +
         'ms"></div>';
