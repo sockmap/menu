@@ -70,8 +70,9 @@
       background: rgba(5, 5, 5, 0.9);
       border-radius: 4px;
       box-shadow: inset 0 0 4px rgba(0,0,0,0.8), 0 0 6px rgba(0,0,0,0.5);
-      align-self: stretch;
+      align-self: flex-start;
       justify-content: space-between;
+      box-sizing: border-box;
     }
 
     .PScroll .arrow {
@@ -895,31 +896,44 @@
 
     function updatePanelHeights() {
       const total = state.elements.length;
-      const start = state.scrollOffset;
-      const end = Math.min(total, start + state.maxVisible);
-      let height = 0;
+      let tabsHeight = 0;
 
-      for (let i = start; i < end; i++) {
-        height += rowHeight(state.elements[i]);
+      if (total <= state.maxVisible) {
+        for (let i = 0; i < total; i++) {
+          tabsHeight += rowHeight(state.elements[i]);
+        }
+      } else {
+        const start = state.scrollOffset;
+        const end = Math.min(total, start + state.maxVisible);
+        for (let i = start; i < end; i++) {
+          tabsHeight += rowHeight(state.elements[i]);
+        }
       }
 
       const tabs = $("tabs");
       const scroll = $("pScroll");
-      const right = document.querySelector(".PRightElements");
+      const categories = $("categories");
+      const footer = document.querySelector(".PFooter");
 
-      if (height > 0) {
-        tabs.style.height = height + "px";
-        tabs.style.minHeight = height + "px";
-        tabs.style.maxHeight = height + "px";
+      if (tabsHeight > 0) {
+        tabs.style.height = tabsHeight + "px";
+        tabs.style.minHeight = tabsHeight + "px";
+        tabs.style.maxHeight = tabsHeight + "px";
       } else {
         tabs.style.height = "auto";
         tabs.style.minHeight = "0";
         tabs.style.maxHeight = "none";
       }
 
-      if (right && scroll) {
-        scroll.style.height = right.offsetHeight + "px";
-        scroll.style.minHeight = right.offsetHeight + "px";
+      if (scroll) {
+        let columnHeight = tabsHeight;
+        if (categories) columnHeight += categories.offsetHeight + 4;
+        if (footer) columnHeight += footer.offsetHeight + 4;
+        columnHeight += 12;
+
+        scroll.style.height = columnHeight + "px";
+        scroll.style.minHeight = columnHeight + "px";
+        scroll.style.maxHeight = columnHeight + "px";
       }
     }
 
