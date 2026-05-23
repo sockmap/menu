@@ -465,12 +465,12 @@
       position: absolute;
       right: 0;
       width: auto;
-      min-width: 220px;
-      max-width: 320px;
+      min-width: 150px;
+      max-width: 210px;
       text-align: left;
       background: rgba(var(--menu-surface-2), 0.94);
       border: 1px solid rgba(var(--menu-color), 0.4);
-      border-radius: 12px;
+      border-radius: 10px;
       box-shadow: 0 0 14px rgba(var(--menu-color-glow), 0.15);
       color: rgb(var(--menu-text));
       animation: notifIn 0.24s ease forwards;
@@ -478,10 +478,12 @@
     }
 
     .NotificationInner {
-      display: block;
-      padding: 13px 16px 14px;
-      border-left: 4px solid rgb(var(--menu-color));
-      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px 6px;
+      border-left: 3px solid rgb(var(--menu-color));
+      border-radius: 10px;
       background: linear-gradient(
         180deg,
         rgba(var(--menu-color), 0.16) 0%,
@@ -506,14 +508,14 @@
     }
 
     .NotificationTitle {
-      display: block;
-      font-size: 12px;
+      font-size: 9px;
       font-weight: 600;
-      letter-spacing: 0.07em;
-      line-height: 1.2;
+      letter-spacing: 0.06em;
+      line-height: 1;
       color: rgb(var(--menu-color-bright));
       text-transform: uppercase;
-      margin-bottom: 4px;
+      flex-shrink: 0;
+      margin: 0;
     }
 
     .Notification.error .NotificationTitle { color: rgb(var(--menu-error)); }
@@ -521,19 +523,21 @@
     .Notification.warning .NotificationTitle { color: rgb(255, 196, 110); }
 
     .NotificationDesc {
-      display: block;
-      font-size: 13px;
+      font-size: 10px;
       font-weight: 300;
-      line-height: 1.3;
+      line-height: 1.1;
       color: rgba(var(--menu-text), 0.95);
       margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .NotificationProgress {
       position: absolute;
       left: 0;
       bottom: 0;
-      height: 3px;
+      height: 2px;
       width: 100%;
       background: linear-gradient(
         90deg,
@@ -541,7 +545,7 @@
         rgb(var(--menu-color-bright))
       );
       animation: notifProgress linear forwards;
-      border-radius: 0 0 12px 12px;
+      border-radius: 0 0 10px 10px;
     }
 
     .Notification.error .NotificationProgress {
