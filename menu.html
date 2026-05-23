@@ -51,27 +51,7 @@
       pointer-events: auto;
     }
 
-    .Desc {
-      position: fixed;
-      left: 50%;
-      bottom: 4vw;
-      transform: translateX(-50%);
-      padding: 10px 16px;
-      background: rgba(0, 0, 0, 0.8);
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 300;
-      color: #fff;
-      opacity: 0;
-      transition: opacity 0.15s;
-      pointer-events: none;
-      max-width: 50vw;
-      text-align: center;
-    }
-
-    .Desc.show { opacity: 1; }
-
-    .PWrapper { display: flex; flex-direction: column; font-family: Inter, sans-serif; }
+    .PWrapper { display: flex; flex-direction: column; font-family: Inter, sans-serif; position: relative; }
 
     .PElements {
       display: flex;
@@ -407,39 +387,57 @@
 
     .Metadata {
       position: absolute;
-      right: -16.5vw;
+      left: calc(100% + 0.45vw);
       top: 0;
-      width: 14vw;
-      min-width: 200px;
-      padding: 10px;
-      background: rgba(0, 0, 0, 0.78);
-      border: 1px solid rgba(var(--menu-color), 0.55);
-      border-radius: 4px;
-      box-shadow: 0 0 8px rgba(var(--menu-color), 0.35);
+      width: 12.5vw;
+      min-width: 175px;
+      max-width: 210px;
+      background: rgba(var(--menu-surface-2), 0.94);
+      border: 1px solid rgba(var(--menu-color-dark), 0.42);
+      border-radius: 8px;
+      box-shadow: 0 0 12px rgba(var(--menu-color-glow), 0.1);
       display: none;
+      overflow: hidden;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateX(-4px);
+      transition: opacity 0.16s ease, transform 0.16s ease, top 0.12s ease;
     }
 
-    .Metadata.show { display: block; }
+    .Metadata.show {
+      display: block;
+      opacity: 1;
+      transform: translateX(0);
+    }
 
     .Metadata .Title {
-      font-size: 11px;
-      font-weight: 350;
-      color: rgba(255,255,255,0.8);
-      text-align: center;
-      margin-bottom: 6px;
+      padding: 8px 11px 6px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgb(var(--menu-color-bright));
+      text-align: left;
+      background: linear-gradient(
+        180deg,
+        rgba(var(--menu-color), 0.16) 0%,
+        rgba(var(--menu-surface-2), 0) 100%
+      );
     }
 
     .Metadata .Line {
       height: 1px;
-      background: rgba(255,255,255,0.25);
-      margin-bottom: 8px;
+      background: rgba(var(--menu-color), 0.22);
+      margin: 0;
     }
 
     .Metadata .meta-desc {
-      font-size: 11px;
+      padding: 8px 11px 10px;
+      font-size: 10px;
       font-weight: 300;
-      color: #ccc;
+      color: rgba(var(--menu-text), 0.86);
       line-height: 1.4;
+      text-align: left;
     }
 
     #toasts,
@@ -715,7 +713,6 @@
     </div>
   </div>
 
-  <div class="Desc" id="desc"></div>
   <div class="NotificationsWrapper" id="toasts"></div>
 
   <div class="Overlay" id="keyboardOverlay">
@@ -920,6 +917,25 @@
       }
     }
 
+    function updateMetadataPosition() {
+      const meta = $("metadata");
+      if (!meta.classList.contains("show")) return;
+
+      const row = document.querySelector('#tabList .PTab[data-idx="' + state.index + '"]');
+      const wrapper = document.querySelector(".PWrapper");
+      if (!row || !wrapper) return;
+
+      const wRect = wrapper.getBoundingClientRect();
+      const rowRect = row.getBoundingClientRect();
+      let top = rowRect.top - wRect.top + rowRect.height / 2 - meta.offsetHeight / 2;
+
+      const banner = document.querySelector(".PBanner");
+      const minTop = banner ? banner.offsetHeight + 6 : 6;
+      const maxTop = wrapper.offsetHeight - meta.offsetHeight - 4;
+      top = Math.max(minTop, Math.min(top, maxTop));
+      meta.style.top = top + "px";
+    }
+
     function renderTabs() {
       const list = $("tabList");
       list.innerHTML = "";
@@ -985,22 +1001,22 @@
       const pos = cur && cur.type !== "divider" ? itemIndexAt(state.index) : 0;
       $("footerIndicator").textContent = "(" + pos + "/" + nonDiv + ")";
 
-      const desc = $("desc");
       const meta = $("metadata");
       if (cur && cur.desc && state.visible) {
-        desc.textContent = cur.desc;
-        desc.classList.add("show");
         $("metaTitle").textContent = cur.label || "";
         $("metaDesc").textContent = cur.desc;
         meta.classList.add("show");
+        requestAnimationFrame(updateMetadataPosition);
       } else {
-        desc.classList.remove("show");
         meta.classList.remove("show");
       }
 
       updateScrollBar();
       updatePanelHeights();
-      requestAnimationFrame(updateHighlight);
+      requestAnimationFrame(function () {
+        updateHighlight();
+        updateMetadataPosition();
+      });
     }
 
     function render() {
@@ -1096,7 +1112,6 @@
           state.visible = !!data.visible;
           $("app").classList.toggle("visible", state.visible);
           if (!state.visible) {
-            $("desc").classList.remove("show");
             $("metadata").classList.remove("show");
             $("keyboardOverlay").classList.remove("show");
             state.elements = [];
