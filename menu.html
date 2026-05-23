@@ -447,7 +447,10 @@
       position: fixed;
       bottom: 1.2vw;
       right: 1.2vw;
-      display: block;
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: flex-end;
+      gap: 6px;
       z-index: 9999;
       pointer-events: none;
       background: none !important;
@@ -460,34 +463,37 @@
       min-height: 0;
       padding: 0;
       margin: 0;
-      text-align: right;
     }
 
     .Notification {
-      display: inline-block;
+      display: block;
       width: auto;
-      max-width: 220px;
-      margin-top: 4px;
+      min-width: 160px;
+      max-width: 260px;
       text-align: left;
-      background: rgba(22, 20, 14, 0.72);
-      border: 1px solid rgba(var(--menu-color), 0.32);
-      border-radius: 2px;
-      box-shadow: none;
+      background: rgba(var(--menu-surface-2), 0.92);
+      border: 1px solid rgba(var(--menu-color-dark), 0.45);
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(var(--menu-color-glow), 0.12);
       color: rgb(var(--menu-text));
-      animation: notifIn 0.18s ease forwards;
+      animation: notifIn 0.22s ease forwards;
       position: relative;
       overflow: hidden;
-      vertical-align: top;
-      line-height: 1;
+      flex-shrink: 0;
     }
 
     .NotificationInner {
       display: flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 7px;
-      min-height: 0;
-      border-left: 2px solid rgb(var(--menu-color));
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 3px;
+      padding: 8px 11px 9px;
+      border-left: 3px solid rgb(var(--menu-color));
+      background: linear-gradient(
+        180deg,
+        rgba(var(--menu-color), 0.14) 0%,
+        rgba(var(--menu-surface-2), 0) 100%
+      );
     }
 
     .Notification.success .NotificationInner {
@@ -507,13 +513,12 @@
     }
 
     .NotificationTitle {
-      font-size: 8px;
+      font-size: 10px;
       font-weight: 600;
       letter-spacing: 0.06em;
-      line-height: 1;
+      line-height: 1.2;
       color: rgb(var(--menu-color-bright));
       text-transform: uppercase;
-      flex-shrink: 0;
     }
 
     .Notification.error .NotificationTitle { color: rgb(var(--menu-error)); }
@@ -521,41 +526,43 @@
     .Notification.warning .NotificationTitle { color: rgb(255, 196, 110); }
 
     .NotificationDesc {
-      font-size: 8px;
+      font-size: 11px;
       font-weight: 300;
-      line-height: 1;
-      color: rgba(var(--menu-text), 0.88);
+      line-height: 1.25;
+      color: rgba(var(--menu-text), 0.92);
       margin: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     .NotificationProgress {
       position: absolute;
       left: 0;
       bottom: 0;
-      height: 1px;
+      height: 2px;
       width: 100%;
-      background: rgba(var(--menu-color-bright), 0.6);
+      background: linear-gradient(
+        90deg,
+        rgb(var(--menu-color-dark)),
+        rgb(var(--menu-color-bright))
+      );
       animation: notifProgress linear forwards;
+      border-radius: 0 0 6px 6px;
     }
 
     .Notification.error .NotificationProgress {
-      background: rgba(var(--menu-error), 0.85);
+      background: linear-gradient(90deg, rgb(180, 50, 40), rgb(var(--menu-error)));
     }
 
     .Notification.info .NotificationProgress {
-      background: rgba(var(--menu-info), 0.85);
+      background: linear-gradient(90deg, rgb(var(--menu-color-dark)), rgb(var(--menu-info)));
     }
 
     .Notification.warning .NotificationProgress {
-      background: rgba(255, 196, 110, 0.85);
+      background: linear-gradient(90deg, rgb(180, 120, 40), rgb(255, 196, 110));
     }
 
     @keyframes notifIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(10px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     @keyframes notifProgress {
@@ -1016,10 +1023,9 @@
     }
 
     function showNotification(data) {
+      const wrap = $("toasts");
       const n = document.createElement("div");
       n.className = "Notification " + (data.type || "info");
-      n.style.display = "inline-block";
-      n.style.width = "auto";
       const dur = data.duration || 3000;
       n.innerHTML =
         '<div class="NotificationInner">' +
@@ -1031,7 +1037,7 @@
         '<div class="NotificationProgress" style="animation-duration:' +
         dur +
         'ms"></div>';
-      $("toasts").appendChild(n);
+      wrap.insertBefore(n, wrap.firstChild);
       setTimeout(() => n.remove(), dur);
     }
 
