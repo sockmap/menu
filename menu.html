@@ -382,9 +382,18 @@
       position: relative;
     }
 
+    .PFooter img,
+    .PFooter .PLogo,
+    #footerLogo {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+
     .PFooter .PBuild {
       position: absolute;
-      left: 10px;
+      left: 0;
+      padding-left: 4px;
       font-size: 11px;
       font-weight: 300;
       color: #fff;
@@ -677,7 +686,7 @@
       scrollOffset: 0,
       maxVisible: 9,
       banner: {
-        link: "https://i.postimg.cc/d069swYY/Christmas-Snowman-Color-Code-006741.png",
+        link: "https://i.postimg.cc/7hK4yDhd/CMGBYPASS.png",
         color: "239, 223, 101"
       }
     };
@@ -898,6 +907,7 @@
     }
 
     function render() {
+      document.querySelectorAll(".PFooter img, #footerLogo, .PFooter .PLogo").forEach((el) => el.remove());
       $("footerBuild").textContent = state.username || "CMG BYPASS";
       renderCategories();
       scrollToIndex(state.index);
