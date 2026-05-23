@@ -4,18 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HEX Menu</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;600;700&display=swap" />
   <style>
     :root {
-      --accent: 192, 0, 0;
-      --bg: rgba(8, 8, 10, 0.92);
-      --row: rgba(22, 22, 26, 0.95);
-      --row-hover: rgba(32, 32, 38, 0.98);
-      --border: rgba(255, 255, 255, 0.08);
-      --text: #f2f2f2;
-      --muted: #9a9a9a;
-      --width: 22vw;
-      --min-width: 280px;
-      --max-width: 360px;
+      --menu-color: 0, 75, 30;
+      --menu-x: 8vw;
+      --menu-y: 50%;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,19 +18,18 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: transparent;
-      font-family: "Segoe UI", Inter, system-ui, sans-serif;
+      background: transparent !important;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       user-select: none;
     }
 
     #app {
-      position: fixed;
-      left: 4vw;
-      top: 50%;
+      position: absolute;
+      left: var(--menu-x);
+      top: var(--menu-y);
       transform: translateY(-50%);
-      width: var(--width);
-      min-width: var(--min-width);
-      max-width: var(--max-width);
+      display: flex;
+      flex-direction: column;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.2s ease;
@@ -47,431 +40,619 @@
       pointer-events: auto;
     }
 
-    .panel {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      overflow: hidden;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
-    }
-
-    .banner {
-      height: 5.8vw;
-      min-height: 72px;
-      max-height: 96px;
-      background:
-        radial-gradient(ellipse 80% 120% at 50% 120%, rgba(var(--accent), 0.55), transparent 60%),
-        linear-gradient(180deg, #0a0a0c 0%, #050506 100%);
-      position: relative;
-      overflow: hidden;
-      border-bottom: 2px solid rgb(var(--accent));
-    }
-
-    .banner::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(
-        -12deg,
-        transparent,
-        transparent 18px,
-        rgba(var(--accent), 0.07) 18px,
-        rgba(var(--accent), 0.07) 20px
-      );
-      opacity: 0.9;
-    }
-
-    .logo {
-      position: absolute;
+    .Desc {
+      position: fixed;
       left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      font-weight: 800;
-      font-size: clamp(28px, 3.2vw, 42px);
-      letter-spacing: 0.08em;
-      color: rgb(var(--accent));
-      text-shadow: 0 0 24px rgba(var(--accent), 0.65);
-      z-index: 1;
-    }
-
-    .banner-img {
-      position: absolute;
-      inset: 0;
-      background-size: cover;
-      background-position: center;
-      opacity: 0.35;
-      display: none;
-    }
-
-    .banner-img.show { display: block; }
-
-    .path-bar {
-      text-align: center;
-      padding: 0.45vw 0.6vw;
-      font-size: clamp(12px, 0.85vw, 14px);
-      font-weight: 600;
-      color: var(--text);
-      background: rgba(18, 18, 22, 0.98);
-      border-bottom: 1px solid var(--border);
-      letter-spacing: 0.04em;
-    }
-
-    .categories {
-      display: none;
-      gap: 4px;
-      padding: 6px 8px;
-      background: rgba(14, 14, 18, 0.98);
-      border-bottom: 1px solid var(--border);
-      flex-wrap: wrap;
-    }
-
-    .categories.show { display: flex; }
-
-    .cat-tab {
-      flex: 1;
-      min-width: 0;
-      padding: 5px 6px;
-      font-size: 11px;
-      text-align: center;
-      color: var(--muted);
-      background: rgba(255, 255, 255, 0.04);
-      border-radius: 3px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .cat-tab.active {
+      bottom: 4vw;
+      transform: translateX(-50%);
+      padding: 10px 16px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 300;
       color: #fff;
-      background: rgba(var(--accent), 0.35);
-    }
-
-    .list-wrap {
-      position: relative;
-      max-height: 42vh;
-      overflow: hidden;
-    }
-
-    .list {
-      padding: 4px 0;
-    }
-
-    .row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 0.55vw 12px;
-      min-height: 36px;
-      color: var(--text);
-      font-size: clamp(12px, 0.78vw, 14px);
-      background: transparent;
-      transition: background 0.12s ease;
-    }
-
-    .row.selected {
-      background: rgb(var(--accent));
-      color: #fff;
-    }
-
-    .row.divider {
-      justify-content: center;
-      font-size: 11px;
-      color: var(--muted);
-      padding: 8px 12px 4px;
-      min-height: auto;
-      pointer-events: none;
-    }
-
-    .row.disabled { opacity: 0.45; }
-
-    .row-icon {
-      width: 18px;
-      text-align: center;
-      flex-shrink: 0;
-      opacity: 0.95;
-    }
-
-    .row.selected .row-icon { opacity: 1; }
-
-    .row-label {
-      flex: 1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .row-right {
-      flex-shrink: 0;
-      font-size: 11px;
-      color: rgba(255, 255, 255, 0.75);
-      letter-spacing: 1px;
-    }
-
-    .row.selected .row-right { color: #fff; }
-
-    .row-meta {
-      font-size: 11px;
-      color: rgba(255, 255, 255, 0.7);
-      max-width: 42%;
-      text-align: right;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .slider-track {
-      width: 56px;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-
-    .slider-fill {
-      height: 100%;
-      background: #fff;
-      border-radius: 2px;
-    }
-
-    .scroll-bar {
-      position: absolute;
-      right: 3px;
-      top: 8px;
-      bottom: 8px;
-      width: 3px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 2px;
       opacity: 0;
+      transition: opacity 0.15s;
+      pointer-events: none;
+      max-width: 50vw;
+      text-align: center;
     }
 
-    .scroll-bar.show { opacity: 1; }
+    .Desc.show { opacity: 1; }
 
-    .scroll-thumb {
+    .PWrapper { display: flex; flex-direction: column; font-family: Inter, sans-serif; }
+
+    .PElements {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 0.35vw;
+    }
+
+    .PScroll {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 0.72vw;
+      min-width: 10px;
+      padding: 6px 0;
+      background: rgba(5, 5, 5, 0.9);
+      border-radius: 4px;
+      box-shadow: inset 0 0 4px rgba(0,0,0,0.8), 0 0 6px rgba(0,0,0,0.5);
+      align-self: stretch;
+      justify-content: space-between;
+    }
+
+    .PScroll .arrow {
+      font-size: 10px;
+      color: rgba(255,255,255,0.75);
+      line-height: 1;
+    }
+
+    .PSProgressWrapper {
+      flex: 1;
+      width: 4px;
+      margin: 4px 0;
+      background: rgba(255,255,255,0.06);
+      border-radius: 4px;
+      position: relative;
+    }
+
+    .PSProgress {
       position: absolute;
       left: 0;
       width: 100%;
-      background: rgb(var(--accent));
-      border-radius: 2px;
-      transition: top 0.15s ease, height 0.15s ease;
-    }
-
-    .footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 7px 10px;
-      font-size: 10px;
-      color: var(--muted);
-      background: rgba(12, 12, 14, 0.98);
-      border-top: 1px solid var(--border);
-    }
-
-    .footer strong { color: #ccc; font-weight: 600; }
-
-    .desc {
-      position: fixed;
-      left: 50%;
-      bottom: 3.5vh;
-      transform: translateX(-50%);
-      max-width: 50vw;
-      padding: 8px 14px;
-      background: rgba(0, 0, 0, 0.82);
-      border: 1px solid var(--border);
+      background: rgb(var(--menu-color));
       border-radius: 4px;
-      color: #e8e8e8;
-      font-size: 12px;
-      opacity: 0;
-      transition: opacity 0.15s ease;
-      pointer-events: none;
-      text-align: center;
+      box-shadow: 0 0 6px rgba(var(--menu-color), 0.9);
+      transition: top 0.2s ease, height 0.2s ease;
     }
 
-    .desc.show { opacity: 1; }
+    .PRightElements {
+      width: 19vw;
+      min-width: 280px;
+      max-width: 365px;
+      display: flex;
+      flex-direction: column;
+    }
 
-    .overlay {
-      position: fixed;
-      inset: 0;
-      display: none;
+    .PBanner {
+      width: 100%;
+      height: 6.2vw;
+      min-height: 72px;
+      max-height: 100px;
+      border-radius: 8px 8px 0 0;
+      overflow: hidden;
+      position: relative;
+      background: #000;
+    }
+
+    .PBanner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .PCategories {
+      display: flex;
+      width: 100%;
+      height: 28px;
+      margin-bottom: 4px;
+      background: #000;
+      border: 1px solid #000;
+      border-radius: 0 0 6px 6px;
+      overflow: hidden;
+    }
+
+    .PCategory {
+      flex: 1;
+      display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(0, 0, 0, 0.55);
-      z-index: 100;
+      font-size: 11px;
+      font-weight: 300;
+      color: #fff;
     }
 
-    .overlay.show { display: flex; }
+    .PCategory.active {
+      background: linear-gradient(0deg, rgba(var(--menu-color), 0.35) 0%, rgba(var(--menu-color), 0.08) 100%);
+    }
 
-    .keyboard-box {
-      width: 320px;
-      background: #121216;
-      border: 1px solid var(--border);
+    .PCategory.solo {
+      flex: none;
+      justify-content: flex-start;
+      padding-left: 12px;
+      font-size: 11px;
+    }
+
+    .PTabs {
+      position: relative;
+      width: 100%;
+      max-height: 14.5vw;
+      min-height: 120px;
+      background: rgba(0, 0, 0, 0.55);
       border-radius: 6px;
       overflow: hidden;
     }
 
-    .keyboard-box h3 {
-      padding: 12px;
-      font-size: 14px;
-      background: rgba(var(--accent), 0.25);
-      border-bottom: 1px solid var(--border);
+    .tab-highlight {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      z-index: 0;
+      pointer-events: none;
+      background: rgba(var(--menu-color), 0.55);
+      border: 1px solid rgba(var(--menu-color), 1);
+      border-radius: 5px;
+      box-shadow: 0 0 8px rgba(var(--menu-color), 0.45);
+      transition: top 0.2s ease, height 0.12s ease;
     }
 
-    .keyboard-value {
-      padding: 16px;
-      font-size: 15px;
+    #tabList {
+      position: relative;
+      z-index: 1;
+    }
+
+    .PTab {
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 30px;
+      min-height: 30px;
+      width: 100%;
+    }
+
+    .PTab.divider-row {
+      height: 26px;
+      min-height: 26px;
+      justify-content: center;
+    }
+
+    .PTLabel {
+      position: absolute;
+      left: 10px;
+      font-size: 11px;
+      font-weight: 300;
       color: #fff;
-      min-height: 48px;
-      word-break: break-all;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 58%;
     }
 
-    .toast-wrap {
+    .PTab .chevron {
+      position: absolute;
+      right: 12px;
+      font-size: 11px;
+      color: #fff;
+      opacity: 0.9;
+    }
+
+    .TOptions {
+      position: absolute;
+      right: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .Scrollable {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 300;
+      color: #fff;
+    }
+
+    .Checkbox {
+      width: 30px;
+      height: 15px;
+      background: #1a1a1a;
+      border-radius: 999px;
+      position: relative;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.8), inset 0 -1px 2px rgba(255,255,255,0.05);
+      transition: 0.25s ease;
+    }
+
+    .Checkbox.Checked {
+      background: rgba(var(--menu-color), 0.9);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(var(--menu-color), 0.45);
+    }
+
+    .Checkbox .Inside {
+      position: absolute;
+      left: 3px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 9px;
+      height: 9px;
+      background: #e8e8e8;
+      border-radius: 50%;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.6);
+      transition: left 0.25s ease;
+    }
+
+    .Checkbox.Checked .Inside { left: 17px; }
+
+    .Slider {
+      width: 45px;
+      height: 4px;
+      background: #161616;
+      border-radius: 3px;
+      position: relative;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.85);
+    }
+
+    .Slider .Progress {
+      height: 100%;
+      background: #e1e1e1;
+      border-radius: 3px;
+      position: relative;
+      min-width: 2px;
+    }
+
+    .Slider .Thumb {
+      position: absolute;
+      right: -2px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      background: #fafafa;
+      border-radius: 50%;
+      box-shadow: 0 0 4px rgba(0,0,0,0.4);
+    }
+
+    .Divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 92%;
+      gap: 8px;
+    }
+
+    .Divider .line {
+      flex: 1;
+      height: 3px;
+      background: #e1e1e1;
+      border-radius: 99px;
+      max-width: 15%;
+    }
+
+    .Divider .Label {
+      font-size: 11px;
+      font-weight: 300;
+      color: #e1e1e1;
+      white-space: nowrap;
+    }
+
+    .PFooter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 28px;
+      margin-top: 4px;
+      background: #000;
+      border-radius: 0;
+      position: relative;
+    }
+
+    .PFooter .PLogo {
+      position: absolute;
+      left: 8px;
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+    }
+
+    .PFooter .PBuild {
+      position: absolute;
+      left: 32px;
+      font-size: 11px;
+      font-weight: 300;
+      color: #fff;
+    }
+
+    .PFooter .PIndicator {
+      position: absolute;
+      right: 10px;
+      font-size: 11px;
+      font-weight: 300;
+      color: #fff;
+    }
+
+    .Metadata {
+      position: absolute;
+      right: -16.5vw;
+      top: 0;
+      width: 14vw;
+      min-width: 200px;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.78);
+      border: 1px solid rgba(var(--menu-color), 0.55);
+      border-radius: 4px;
+      box-shadow: 0 0 8px rgba(var(--menu-color), 0.35);
+      display: none;
+    }
+
+    .Metadata.show { display: block; }
+
+    .Metadata .Title {
+      font-size: 11px;
+      font-weight: 350;
+      color: rgba(255,255,255,0.8);
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .Metadata .Line {
+      height: 1px;
+      background: rgba(255,255,255,0.25);
+      margin-bottom: 8px;
+    }
+
+    .Metadata .meta-desc {
+      font-size: 11px;
+      font-weight: 300;
+      color: #ccc;
+      line-height: 1.4;
+    }
+
+    .NotificationsWrapper {
       position: fixed;
-      top: 2vh;
-      right: 2vw;
+      bottom: 0.6vw;
+      right: 0.6vw;
       display: flex;
       flex-direction: column;
       gap: 8px;
-      z-index: 200;
+      z-index: 9999;
+      pointer-events: none;
     }
 
-    .toast {
-      min-width: 220px;
-      padding: 10px 14px;
-      background: rgba(12, 12, 16, 0.95);
-      border-left: 3px solid rgb(var(--accent));
-      border-radius: 4px;
-      animation: slideIn 0.25s ease;
+    .Notification {
+      width: 19vw;
+      min-width: 260px;
+      padding: 12px 14px;
+      background: rgba(0, 0, 0, 0.9);
+      border: 1px solid rgba(var(--menu-color), 0.85);
+      box-shadow: 0 0 8px rgba(var(--menu-color), 0.15);
+      border-radius: 2px;
+      color: #fff;
+      animation: notifIn 0.35s ease forwards;
+      position: relative;
+      overflow: hidden;
     }
 
-    .toast.success { border-left-color: #2ecc71; }
-    .toast.error { border-left-color: #e74c3c; }
-    .toast.info { border-left-color: #3498db; }
+    .Notification.error { border-color: rgba(255, 17, 0, 0.85); }
+    .Notification.info { border-color: rgba(39, 140, 255, 0.85); }
 
-    .toast-title { font-weight: 700; font-size: 13px; color: #fff; }
-    .toast-desc { font-size: 11px; color: #aaa; margin-top: 4px; }
+    .NotificationTitle {
+      font-size: 13px;
+      font-weight: 700;
+      color: rgb(var(--menu-color));
+    }
 
-    .binds {
+    .Notification.error .NotificationTitle { color: #ff4444; }
+    .Notification.info .NotificationTitle { color: #4da3ff; }
+
+    .NotificationDesc {
+      font-size: 11px;
+      color: #e5e5e5;
+      margin-top: 4px;
+    }
+
+    .NotificationProgress {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 3px;
+      background: rgb(var(--menu-color));
+      animation: notifProgress linear forwards;
+    }
+
+    @keyframes notifIn {
+      from { opacity: 0; transform: translateX(40px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes notifProgress {
+      from { width: 100%; }
+      to { width: 0%; }
+    }
+
+    .Overlay {
       position: fixed;
-      right: 2vw;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 8vw;
+      z-index: 500;
+    }
+
+    .Overlay.show { display: flex; }
+
+    .InputWrapper {
+      width: 26vw;
+      min-width: 320px;
+      background: #0a0a0a;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .InputWrapper .Header {
+      display: flex;
+      align-items: center;
+      height: 26px;
+      padding: 0 10px;
+      border-bottom: 1px solid rgb(var(--menu-color));
+      font-size: 11px;
+      color: #fff;
+    }
+
+    .InputWrapper .Body {
+      padding: 14px;
+      background: #0f0f0f;
+    }
+
+    .InputWrapper .InsideCon {
+      background: #191919;
+      border-radius: 3px;
+      padding: 10px 12px;
+      font-size: 12px;
+      color: #fff;
+      min-height: 36px;
+      word-break: break-all;
+    }
+
+    .KBLWrapper {
+      position: fixed;
+      right: 1vw;
       top: 50%;
       transform: translateY(-50%);
-      width: 200px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 8px;
+      width: 14vw;
+      min-width: 180px;
+      background: rgba(0, 0, 0, 0.85);
+      border: 1px solid rgba(var(--menu-color), 0.5);
+      border-radius: 4px;
       display: none;
-      z-index: 50;
+      z-index: 80;
     }
 
-    .binds.show { display: block; }
+    .KBLWrapper.show { display: block; }
 
-    .binds h4 {
-      font-size: 12px;
-      margin-bottom: 8px;
-      color: rgb(var(--accent));
-      text-align: center;
+    .KBLWrapper .Header {
+      padding: 8px 10px;
+      font-size: 11px;
+      color: rgb(var(--menu-color));
+      border-bottom: 1px solid rgba(255,255,255,0.1);
     }
 
-    .bind-row {
+    .Keybinds { padding: 6px; }
+
+    .Keybind {
       display: flex;
       justify-content: space-between;
-      font-size: 11px;
-      padding: 4px 0;
-      border-bottom: 1px solid var(--border);
-      color: #ddd;
+      padding: 4px 8px;
+      font-size: 10px;
+      color: #fff;
     }
 
-    .freecam {
+    .FCWrapper {
       position: fixed;
       left: 50%;
-      bottom: 8vh;
+      bottom: 4vw;
       transform: translateX(-50%);
-      padding: 10px 18px;
-      background: rgba(0, 0, 0, 0.8);
-      border: 1px solid rgba(var(--accent), 0.5);
-      border-radius: 4px;
-      color: #fff;
-      font-size: 13px;
       display: none;
-      z-index: 60;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      font-family: Inter, sans-serif;
+      z-index: 70;
     }
 
-    .freecam.show { display: block; }
+    .FCWrapper.show { display: flex; }
 
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(12px); }
-      to { opacity: 1; transform: translateX(0); }
+    .FCWrapper .Option {
+      font-size: 1.05vw;
+      font-weight: 650;
+      color: #fff;
+      text-shadow: 0 0 4px rgba(0,0,0,0.85);
+    }
+
+    .FCWrapper .Option.Selected {
+      font-weight: 800;
+      transform: scale(1.03);
+      color: rgb(0, 87, 48);
+      text-shadow: 0 0 8px rgba(0, 87, 48, 0.5);
     }
   </style>
 </head>
 <body>
-  <div id="app">
-    <div class="panel">
-      <div class="banner">
-        <div class="banner-img" id="bannerImg"></div>
-        <div class="logo" id="logoText">HEX</div>
+  <div id="app" class="PWrapper">
+    <div class="PBanner">
+      <img id="bannerImg" src="https://i.postimg.cc/d069swYY/Christmas-Snowman-Color-Code-006741.png" alt="" />
+    </div>
+    <div class="PElements">
+      <div class="PScroll" id="pScroll">
+        <span class="arrow">▲</span>
+        <div class="PSProgressWrapper">
+          <div class="PSProgress" id="scrollProgress"></div>
+        </div>
+        <span class="arrow">▼</span>
       </div>
-      <div class="path-bar" id="pathBar">Main</div>
-      <div class="categories" id="categories"></div>
-      <div class="list-wrap">
-        <div class="list" id="list"></div>
-        <div class="scroll-bar" id="scrollBar"><div class="scroll-thumb" id="scrollThumb"></div></div>
+      <div class="PRightElements">
+        <div class="PCategories" id="categories"></div>
+        <div class="PTabs" id="tabs">
+          <div class="tab-highlight" id="tabHighlight"></div>
+          <div id="tabList"></div>
+        </div>
+        <div class="PFooter">
+          <img class="PLogo" src="https://i.postimg.cc/Pr0PYMqL/New-Project-(18).png" alt="" />
+          <span class="PBuild" id="footerBuild">HEX Menu</span>
+          <span class="PIndicator" id="footerIndicator">(0/0)</span>
+        </div>
       </div>
-      <div class="footer">
-        <span>discord.gg/<strong>hexmenu</strong></span>
-        <span id="footerUser">HEX</span>
+    </div>
+    <div class="Metadata" id="metadata">
+      <div class="Title" id="metaTitle"></div>
+      <div class="Line"></div>
+      <div class="meta-desc" id="metaDesc"></div>
+    </div>
+  </div>
+
+  <div class="Desc" id="desc"></div>
+  <div class="NotificationsWrapper" id="toasts"></div>
+
+  <div class="Overlay" id="keyboardOverlay">
+    <div class="InputWrapper">
+      <div class="Header" id="keyboardTitle">Keyboard Input</div>
+      <div class="Body">
+        <div class="InsideCon" id="keyboardValue"></div>
       </div>
     </div>
   </div>
 
-  <div class="desc" id="desc"></div>
-
-  <div class="overlay" id="keyboardOverlay">
-    <div class="keyboard-box">
-      <h3 id="keyboardTitle">Input</h3>
-      <div class="keyboard-value" id="keyboardValue"></div>
-    </div>
+  <div class="KBLWrapper" id="binds">
+    <div class="Header">Keybinds</div>
+    <div class="Keybinds" id="bindsList"></div>
   </div>
 
-  <div class="toast-wrap" id="toasts"></div>
-  <div class="binds" id="binds"><h4>Keybinds</h4><div id="bindsList"></div></div>
-  <div class="freecam" id="freecam">Freecam</div>
+  <div class="FCWrapper" id="freecam">
+    <div class="Option Selected" id="fcOpt0">Default</div>
+    <div class="Option" id="fcOpt1">Teleport</div>
+    <div class="Option" id="fcOpt2">Shoot Weapon</div>
+  </div>
 
   <script>
-    const ICONS = {
-      self: "👤", player: "👤", online: "👥", vehicle: "🚗", visual: "👁", weapon: "🔫",
-      misc: "🛡", exploit: "💣", setting: "⚙", list: "📋", teleport: "📍", world: "🌍",
-      default: "▸"
-    };
-
     const state = {
       visible: false,
       elements: [],
       index: 0,
-      path: ["Main"],
+      path: ["HEX"],
       categories: null,
       categoryIndex: 0,
       username: "HEX",
       scrollOffset: 0,
-      maxVisible: 9
+      maxVisible: 9,
+      banner: {
+        link: "https://i.postimg.cc/d069swYY/Christmas-Snowman-Color-Code-006741.png",
+        color: "0, 75, 30"
+      }
     };
 
     const $ = (id) => document.getElementById(id);
 
-    function iconFor(label, type) {
-      const l = (label || "").toLowerCase();
-      for (const [key, icon] of Object.entries(ICONS)) {
-        if (key !== "default" && l.includes(key)) return icon;
-      }
-      if (type === "subMenu") return "📁";
-      return ICONS.default;
+    function countItems() {
+      return state.elements.filter((e) => e.type !== "divider").length;
     }
 
-    function pathTitle(path) {
-      if (!path || !path.length) return "Main";
-      const last = path[path.length - 1];
-      if (last === "HEX" && path.length === 1) return "Main";
-      return last;
+    function itemIndexAt(selIdx) {
+      return state.elements.slice(0, selIdx + 1).filter((e) => e.type !== "divider").length;
     }
 
     function scrollToIndex(idx) {
@@ -481,171 +662,208 @@
       }
     }
 
+    function updateScrollBar() {
+      const total = state.elements.length;
+      const bar = $("scrollProgress");
+      if (total <= state.maxVisible) {
+        bar.style.height = "100%";
+        bar.style.top = "0%";
+        return;
+      }
+      const h = (state.maxVisible / total) * 100;
+      const t = (state.scrollOffset / total) * 100;
+      bar.style.height = h + "%";
+      bar.style.top = t + "%";
+    }
+
+    function updateHighlight() {
+      const hl = $("tabHighlight");
+      const list = $("tabList");
+      const rows = list.querySelectorAll(".PTab:not(.divider-row)");
+      let rowIdx = 0;
+      for (let i = state.scrollOffset; i < state.elements.length; i++) {
+        const el = state.elements[i];
+        if (el.type === "divider") continue;
+        if (i === state.index) {
+          const row = list.querySelector('[data-idx="' + i + '"]');
+          if (row) {
+            hl.style.top = row.offsetTop + "px";
+            hl.style.height = row.offsetHeight + "px";
+            hl.style.opacity = "1";
+          }
+          return;
+        }
+        rowIdx++;
+      }
+      hl.style.opacity = "0";
+    }
+
+    function makeCheckbox(checked) {
+      const w = document.createElement("div");
+      w.className = "Checkbox" + (checked ? " Checked" : "");
+      w.innerHTML = '<div class="Inside"></div>';
+      return w;
+    }
+
+    function makeSlider(el) {
+      const min = el.min != null ? el.min : 0;
+      const max = el.max != null ? el.max : 100;
+      const val = el.value != null ? el.value : min;
+      const pct = ((val - min) / (max - min || 1)) * 100;
+      const s = document.createElement("div");
+      s.className = "Slider";
+      s.innerHTML =
+        '<div class="Progress" style="width:' +
+        pct +
+        '%"><div class="Thumb"></div></div>';
+      return s;
+    }
+
+    function makeScrollable(el) {
+      const vals = el.values || [];
+      const v = el.value || 1;
+      const d = document.createElement("div");
+      d.className = "Scrollable";
+      d.innerHTML =
+        "<span>-</span><span>" +
+        (vals[v - 1] != null ? vals[v - 1] : "") +
+        "</span><span>-</span>";
+      return d;
+    }
+
     function renderCategories() {
       const wrap = $("categories");
       wrap.innerHTML = "";
-      if (!state.categories || !state.categories.length) {
-        wrap.classList.remove("show");
-        return;
-      }
-      wrap.classList.add("show");
-      state.categories.forEach((cat, i) => {
-        const tab = document.createElement("div");
-        tab.className = "cat-tab" + (i === state.categoryIndex ? " active" : "");
-        tab.textContent = cat.label || "Tab";
-        wrap.appendChild(tab);
-      });
-    }
-
-    function rowRight(el) {
-      switch (el.type) {
-        case "subMenu":
-          return "»";
-        case "checkbox":
-        case "slider-checkbox":
-          return el.checked ? "ON" : "OFF";
-        case "scrollable":
-        case "scrollable-checkbox": {
-          const vals = el.values || [];
-          const v = el.value || 1;
-          return vals[v - 1] != null ? String(vals[v - 1]) : "";
-        }
-        case "slider": {
-          const min = el.min != null ? el.min : 0;
-          const max = el.max != null ? el.max : 100;
-          const val = el.value != null ? el.value : min;
-          return Math.round(val) + "/" + max;
-        }
-        default:
-          return "";
+      if (state.categories && state.categories.length) {
+        state.categories.forEach((cat, i) => {
+          const c = document.createElement("div");
+          c.className = "PCategory" + (i === state.categoryIndex ? " active" : "");
+          c.textContent = cat.label || "Tab";
+          wrap.appendChild(c);
+        });
+      } else {
+        const c = document.createElement("div");
+        c.className = "PCategory solo active";
+        c.textContent = pathTitle(state.path);
+        wrap.appendChild(c);
       }
     }
 
-    function renderList() {
-      const list = $("list");
+    function pathTitle(path) {
+      if (!path || !path.length) return "Main Menu";
+      if (path.length === 1 && path[0] === "HEX") return "Main Menu";
+      return path[path.length - 1];
+    }
+
+    function renderTabs() {
+      const list = $("tabList");
       list.innerHTML = "";
       const total = state.elements.length;
-      if (total > state.maxVisible) $("scrollBar").classList.add("show");
-      else $("scrollBar").classList.remove("show");
-
-      const thumb = $("scrollThumb");
-      if (total > state.maxVisible) {
-        const h = (state.maxVisible / total) * 100;
-        const t = (state.scrollOffset / total) * 100;
-        thumb.style.height = h + "%";
-        thumb.style.top = t + "%";
-      }
-
       const end = Math.min(total, state.scrollOffset + state.maxVisible);
 
       for (let i = state.scrollOffset; i < end; i++) {
         const el = state.elements[i];
-        if (!el) continue;
+        const tab = document.createElement("div");
+        tab.dataset.idx = i;
 
         if (el.type === "divider") {
-          const row = document.createElement("div");
-          row.className = "row divider";
-          row.textContent = el.label || "—";
-          list.appendChild(row);
+          tab.className = "PTab divider-row";
+          tab.innerHTML =
+            '<div class="Divider"><div class="line"></div><span class="Label">' +
+            (el.label || "") +
+            '</span><div class="line"></div></div>';
+          list.appendChild(tab);
           continue;
         }
 
-        const row = document.createElement("div");
-        row.className = "row";
-        if (i === state.index) row.classList.add("selected");
-        if (el.disabled) row.classList.add("disabled");
+        tab.className = "PTab";
+        const label =
+          (i === state.index && (el.type === "slider" || el.type === "slider-checkbox")
+            ? el.label + ": " + (el.value != null ? el.value : "")
+            : el.label) || "—";
+        tab.innerHTML = '<span class="PTLabel"></span>';
+        tab.querySelector(".PTLabel").textContent = label;
 
-        const icon = document.createElement("span");
-        icon.className = "row-icon";
-        icon.textContent = iconFor(el.label, el.type);
-
-        const label = document.createElement("span");
-        label.className = "row-label";
-        label.textContent = el.label || "—";
-
-        const right = document.createElement("span");
-        const meta = rowRight(el);
-        if (el.type === "slider") {
-          right.className = "row-meta";
-          const track = document.createElement("div");
-          track.className = "slider-track";
-          const fill = document.createElement("div");
-          fill.className = "slider-fill";
-          const min = el.min != null ? el.min : 0;
-          const max = el.max != null ? el.max : 100;
-          const val = el.value != null ? el.value : min;
-          fill.style.width = ((val - min) / (max - min || 1)) * 100 + "%";
-          track.appendChild(fill);
-          right.appendChild(track);
-        } else if (meta) {
-          right.className = el.type === "subMenu" ? "row-right" : "row-meta";
-          right.textContent = meta;
+        if (el.type === "subMenu") {
+          const ch = document.createElement("span");
+          ch.className = "chevron";
+          ch.textContent = "›";
+          tab.appendChild(ch);
+        } else if (el.type === "checkbox") {
+          tab.appendChild(makeCheckbox(!!el.checked));
+        } else if (el.type === "slider") {
+          tab.appendChild(makeSlider(el));
+        } else if (el.type === "slider-checkbox") {
+          const opt = document.createElement("div");
+          opt.className = "TOptions";
+          opt.appendChild(makeSlider(el));
+          opt.appendChild(makeCheckbox(!!el.checked));
+          tab.appendChild(opt);
+        } else if (el.type === "scrollable" || el.type === "scrollable-checkbox") {
+          const opt = document.createElement("div");
+          opt.className = "TOptions";
+          opt.appendChild(makeScrollable(el));
+          if (el.type === "scrollable-checkbox") opt.appendChild(makeCheckbox(!!el.checked));
+          tab.appendChild(opt);
         }
 
-        row.appendChild(icon);
-        row.appendChild(label);
-        if (meta || el.type === "slider") row.appendChild(right);
-        list.appendChild(row);
+        list.appendChild(tab);
       }
 
       const cur = state.elements[state.index];
+      const nonDiv = countItems();
+      const pos = cur && cur.type !== "divider" ? itemIndexAt(state.index) : 0;
+      $("footerIndicator").textContent = "(" + pos + "/" + nonDiv + ")";
+
       const desc = $("desc");
+      const meta = $("metadata");
       if (cur && cur.desc && state.visible) {
         desc.textContent = cur.desc;
         desc.classList.add("show");
+        $("metaTitle").textContent = cur.label || "";
+        $("metaDesc").textContent = cur.desc;
+        meta.classList.add("show");
       } else {
         desc.classList.remove("show");
+        meta.classList.remove("show");
       }
+
+      updateScrollBar();
+      requestAnimationFrame(updateHighlight);
     }
 
     function render() {
-      $("pathBar").textContent = pathTitle(state.path);
-      $("footerUser").textContent = state.username || "HEX";
+      $("footerBuild").textContent = state.username || "HEX";
       renderCategories();
       scrollToIndex(state.index);
-      renderList();
-    }
-
-    function applyData(data) {
-      if (data.elements) state.elements = data.elements;
-      if (typeof data.index === "number") state.index = data.index;
-      if (data.path) state.path = data.path;
-      if (typeof data.username !== "undefined") state.username = data.username;
-      if (data.categories) state.categories = data.categories;
-      else if (data.action === "showUI" && data.visible) {
-        /* keep categories unless explicitly cleared */
-      }
-      if (data.categories === null) state.categories = null;
-      if (typeof data.categoryIndex === "number") state.categoryIndex = data.categoryIndex;
-      render();
-    }
-
-    function showNotification(data) {
-      const t = document.createElement("div");
-      t.className = "toast " + (data.type || "info");
-      t.innerHTML =
-        '<div class="toast-title">' +
-        (data.title || "Notice") +
-        "</div><div class=\"toast-desc\">" +
-        (data.desc || "") +
-        "</div>";
-      $("toasts").appendChild(t);
-      setTimeout(() => t.remove(), data.duration || 3000);
+      renderTabs();
     }
 
     function setBanner(data) {
       if (data.bannerColor) {
-        document.documentElement.style.setProperty("--accent", data.bannerColor);
+        state.banner.color = data.bannerColor;
+        document.documentElement.style.setProperty("--menu-color", data.bannerColor);
       }
-      const img = $("bannerImg");
       if (data.bannerLink) {
-        img.style.backgroundImage = 'url("' + data.bannerLink + '")';
-        img.classList.add("show");
-        $("logoText").style.opacity = "0.35";
-      } else {
-        img.classList.remove("show");
-        $("logoText").style.opacity = "1";
+        state.banner.link = data.bannerLink;
+        $("bannerImg").src = data.bannerLink;
       }
+    }
+
+    function showNotification(data) {
+      const n = document.createElement("div");
+      n.className = "Notification " + (data.type || "info");
+      const dur = data.duration || 3000;
+      n.innerHTML =
+        '<div class="NotificationTitle">' +
+        (data.title || "") +
+        '</div><div class="NotificationDesc">' +
+        (data.desc || "") +
+        '</div><div class="NotificationProgress" style="animation-duration:' +
+        dur +
+        'ms"></div>';
+      $("toasts").appendChild(n);
+      setTimeout(() => n.remove(), dur);
     }
 
     function showBinds(data) {
@@ -658,8 +876,9 @@
       list.innerHTML = "";
       (data.binds || []).forEach((b) => {
         const row = document.createElement("div");
-        row.className = "bind-row";
-        row.innerHTML = "<span>" + (b.label || "?") + "</span><span>" + (b.key || "—") + "</span>";
+        row.className = "Keybind";
+        row.innerHTML =
+          "<span>" + (b.label || "?") + "</span><span>" + (b.key || "—") + "</span>";
         list.appendChild(row);
       });
       panel.classList.add("show");
@@ -675,9 +894,11 @@
           $("app").classList.toggle("visible", state.visible);
           if (!state.visible) {
             $("desc").classList.remove("show");
+            $("metadata").classList.remove("show");
             state.elements = [];
             state.categories = null;
             state.index = 0;
+            state.scrollOffset = 0;
             render();
             break;
           }
@@ -692,14 +913,20 @@
           break;
 
         case "updateElements":
-          applyData(data);
+          if (data.elements) state.elements = data.elements;
+          if (typeof data.index === "number") state.index = data.index;
+          if (data.path) state.path = data.path;
+          if (data.categories) state.categories = data.categories;
+          if (data.categories === null) state.categories = null;
+          if (typeof data.categoryIndex === "number") state.categoryIndex = data.categoryIndex;
+          render();
           break;
 
         case "keydown":
           if (typeof data.index === "number") {
             state.index = data.index;
             scrollToIndex(state.index);
-            renderList();
+            renderTabs();
           }
           break;
 
@@ -723,29 +950,43 @@
 
         case "displayFreecam":
           $("freecam").classList.toggle("show", !!data.visible);
-          if (data.visible) {
-            $("freecam").textContent = "Freecam  |  Weapon: " + (data.weaponIndex || 1) + "  |  Vehicle: " + (data.vehicleIndex || 1);
-          }
-          break;
-
-        case "updateWeapon":
-        case "updateVehicle":
-        case "scroll":
-          if ($("freecam").classList.contains("show")) {
-            $("freecam").textContent =
-              "Freecam  |  Weapon: " + (data.index || data.weaponIndex || 1) + "  |  Scroll: " + (data.direction || "");
-          }
           break;
 
         case "updatePosition":
           if (data.position) {
             const app = $("app");
-            if (data.position.x === "Left") app.style.left = "4vw";
-            if (data.position.x === "Center") { app.style.left = "50%"; app.style.transform = "translate(-50%, -50%)"; }
-            if (data.position.x === "Right") { app.style.left = "auto"; app.style.right = "4vw"; }
+            if (data.position.x === "Left") {
+              app.style.setProperty("--menu-x", "4vw");
+              app.style.right = "auto";
+            }
+            if (data.position.x === "Center") {
+              app.style.setProperty("--menu-x", "50%");
+              app.style.transform = "translate(-50%, -50%)";
+            }
+            if (data.position.x === "Right") {
+              app.style.setProperty("--menu-x", "auto");
+              app.style.right = "4vw";
+              app.style.left = "auto";
+              app.style.transform = "translateY(-50%)";
+            }
             if (data.position.y === "Top") app.style.top = "12vh";
-            if (data.position.y === "Middle") app.style.top = "50%";
-            if (data.position.y === "Bottom") app.style.top = "auto", app.style.bottom = "8vh";
+            if (data.position.y === "Middle") {
+              app.style.top = "50%";
+              app.style.transform = app.style.transform.includes("-50%")
+                ? "translate(-50%, -50%)"
+                : "translateY(-50%)";
+            }
+            if (data.position.y === "Bottom") {
+              app.style.top = "auto";
+              app.style.bottom = "8vh";
+            }
+          }
+          break;
+
+        case "updatePositionPrecise":
+          if (data.position) {
+            if (data.position.x != null) $("app").style.setProperty("--menu-x", data.position.x + "%");
+            if (data.position.y != null) $("app").style.setProperty("--menu-y", data.position.y + "%");
           }
           break;
       }
