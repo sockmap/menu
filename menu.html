@@ -90,7 +90,7 @@
       background: rgba(5, 5, 5, 0.9);
       border-radius: 4px;
       box-shadow: inset 0 0 4px rgba(0,0,0,0.8), 0 0 6px rgba(0,0,0,0.5);
-      align-self: stretch;
+      align-self: flex-start;
       justify-content: space-between;
     }
 
@@ -182,8 +182,6 @@
     .PTabs {
       position: relative;
       width: 100%;
-      max-height: 14.5vw;
-      min-height: 120px;
       background: rgba(var(--menu-surface-2), 0.88);
       border-radius: 6px;
       overflow: hidden;
@@ -446,59 +444,99 @@
 
     .NotificationsWrapper {
       position: fixed;
-      bottom: 0.6vw;
-      right: 0.6vw;
+      bottom: 1vw;
+      right: 1vw;
       display: flex;
-      flex-direction: column;
-      gap: 8px;
+      flex-direction: column-reverse;
+      gap: 10px;
       z-index: 9999;
       pointer-events: none;
     }
 
     .Notification {
-      width: 19vw;
-      min-width: 260px;
-      padding: 12px 14px;
-      background: rgba(var(--menu-surface), 0.95);
-      border: 1px solid rgba(var(--menu-color), 0.75);
-      box-shadow: 0 0 12px rgba(var(--menu-color-glow), 0.18);
-      border-radius: 2px;
+      width: 18vw;
+      min-width: 280px;
+      max-width: 360px;
+      background: linear-gradient(145deg, rgba(var(--menu-surface), 0.98), rgba(var(--menu-surface-2), 0.94));
+      border: 1px solid rgba(var(--menu-color), 0.28);
+      border-radius: 8px;
+      box-shadow:
+        0 10px 28px rgba(0, 0, 0, 0.5),
+        0 0 18px rgba(var(--menu-color-glow), 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
       color: rgb(var(--menu-text));
-      animation: notifIn 0.35s ease forwards;
+      animation: notifIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
       position: relative;
       overflow: hidden;
+      backdrop-filter: blur(8px);
     }
 
-    .Notification.error { border-color: rgba(var(--menu-error), 0.85); }
-    .Notification.info { border-color: rgba(var(--menu-info), 0.85); }
+    .NotificationInner {
+      padding: 11px 14px 13px 15px;
+      border-left: 3px solid rgb(var(--menu-color));
+    }
+
+    .Notification.success .NotificationInner {
+      border-left-color: rgb(var(--menu-color-bright));
+    }
+
+    .Notification.error .NotificationInner {
+      border-left-color: rgb(var(--menu-error));
+    }
+
+    .Notification.info .NotificationInner {
+      border-left-color: rgb(var(--menu-info));
+    }
+
+    .Notification.warning .NotificationInner {
+      border-left-color: rgb(255, 180, 80);
+    }
 
     .NotificationTitle {
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
       color: rgb(var(--menu-color-bright));
+      text-transform: uppercase;
     }
 
     .Notification.error .NotificationTitle { color: rgb(var(--menu-error)); }
     .Notification.info .NotificationTitle { color: rgb(var(--menu-info)); }
+    .Notification.warning .NotificationTitle { color: rgb(255, 196, 110); }
 
     .NotificationDesc {
       font-size: 11px;
-      color: rgba(var(--menu-text), 0.82);
-      margin-top: 4px;
+      font-weight: 300;
+      line-height: 1.45;
+      color: rgba(var(--menu-text), 0.78);
+      margin-top: 5px;
     }
 
     .NotificationProgress {
       position: absolute;
       left: 0;
       bottom: 0;
-      height: 3px;
+      height: 2px;
       background: linear-gradient(90deg, rgb(var(--menu-color-dark)), rgb(var(--menu-color-bright)));
       animation: notifProgress linear forwards;
+      opacity: 0.95;
+    }
+
+    .Notification.error .NotificationProgress {
+      background: linear-gradient(90deg, rgb(180, 50, 40), rgb(var(--menu-error)));
+    }
+
+    .Notification.info .NotificationProgress {
+      background: linear-gradient(90deg, rgb(var(--menu-color-dark)), rgb(var(--menu-info)));
+    }
+
+    .Notification.warning .NotificationProgress {
+      background: linear-gradient(90deg, rgb(180, 120, 40), rgb(255, 196, 110));
     }
 
     @keyframes notifIn {
-      from { opacity: 0; transform: translateX(40px); }
-      to { opacity: 1; transform: translateX(0); }
+      from { opacity: 0; transform: translateX(24px) translateY(6px); }
+      to { opacity: 1; transform: translateX(0) translateY(0); }
     }
 
     @keyframes notifProgress {
@@ -824,6 +862,38 @@
       return path[path.length - 1];
     }
 
+    function rowHeight(el) {
+      return el.type === "divider" ? 26 : 30;
+    }
+
+    function updatePanelHeights() {
+      const total = state.elements.length;
+      const start = state.scrollOffset;
+      const end = Math.min(total, start + state.maxVisible);
+      let height = 0;
+
+      for (let i = start; i < end; i++) {
+        height += rowHeight(state.elements[i]);
+      }
+
+      const tabs = $("tabs");
+      const scroll = $("pScroll");
+
+      if (height > 0) {
+        tabs.style.height = height + "px";
+        tabs.style.minHeight = height + "px";
+        tabs.style.maxHeight = height + "px";
+        scroll.style.height = height + "px";
+        scroll.style.minHeight = height + "px";
+      } else {
+        tabs.style.height = "auto";
+        tabs.style.minHeight = "0";
+        tabs.style.maxHeight = "none";
+        scroll.style.height = "auto";
+        scroll.style.minHeight = "0";
+      }
+    }
+
     function renderTabs() {
       const list = $("tabList");
       list.innerHTML = "";
@@ -903,6 +973,7 @@
       }
 
       updateScrollBar();
+      updatePanelHeights();
       requestAnimationFrame(updateHighlight);
     }
 
@@ -930,11 +1001,13 @@
       n.className = "Notification " + (data.type || "info");
       const dur = data.duration || 3000;
       n.innerHTML =
+        '<div class="NotificationInner">' +
         '<div class="NotificationTitle">' +
         (data.title || "") +
         '</div><div class="NotificationDesc">' +
         (data.desc || "") +
-        '</div><div class="NotificationProgress" style="animation-duration:' +
+        "</div></div>" +
+        '<div class="NotificationProgress" style="animation-duration:' +
         dur +
         'ms"></div>';
       $("toasts").appendChild(n);
@@ -970,6 +1043,7 @@
           if (!state.visible) {
             $("desc").classList.remove("show");
             $("metadata").classList.remove("show");
+            $("keyboardOverlay").classList.remove("show");
             state.elements = [];
             state.categories = null;
             state.index = 0;
@@ -977,6 +1051,7 @@
             render();
             break;
           }
+          $("keyboardOverlay").classList.remove("show");
           if (data.elements) state.elements = data.elements;
           if (typeof data.index === "number") state.index = data.index;
           if (data.path) state.path = data.path;
