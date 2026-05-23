@@ -7,7 +7,18 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;600;700&display=swap" />
   <style>
     :root {
-      --menu-color: 0, 75, 30;
+      /* Primary theme — #efdf65 */
+      --menu-color: 239, 223, 101;
+      --menu-color-bright: 248, 236, 158;
+      --menu-color-dark: 180, 168, 72;
+      --menu-color-deep: 42, 38, 18;
+      --menu-color-glow: 248, 236, 158;
+      --menu-surface: 18, 17, 12;
+      --menu-surface-2: 28, 26, 16;
+      --menu-text: 255, 252, 240;
+      --menu-muted: 180, 172, 130;
+      --menu-error: 232, 93, 74;
+      --menu-info: 210, 195, 120;
       --menu-x: 8vw;
       --menu-y: 50%;
     }
@@ -104,7 +115,7 @@
       width: 100%;
       background: rgb(var(--menu-color));
       border-radius: 4px;
-      box-shadow: 0 0 6px rgba(var(--menu-color), 0.9);
+      box-shadow: 0 0 8px rgba(var(--menu-color-glow), 0.85);
       transition: top 0.2s ease, height 0.2s ease;
     }
 
@@ -139,8 +150,8 @@
       width: 100%;
       height: 28px;
       margin-bottom: 4px;
-      background: #000;
-      border: 1px solid #000;
+      background: rgb(var(--menu-surface));
+      border: 1px solid rgba(var(--menu-color-dark), 0.45);
       border-radius: 0 0 6px 6px;
       overflow: hidden;
     }
@@ -156,7 +167,7 @@
     }
 
     .PCategory.active {
-      background: linear-gradient(0deg, rgba(var(--menu-color), 0.35) 0%, rgba(var(--menu-color), 0.08) 100%);
+      background: linear-gradient(0deg, rgba(var(--menu-color), 0.42) 0%, rgba(var(--menu-color-dark), 0.12) 100%);
     }
 
     .PCategory.solo {
@@ -173,7 +184,7 @@
       width: 100%;
       max-height: 14.5vw;
       min-height: 120px;
-      background: rgba(0, 0, 0, 0.55);
+      background: rgba(var(--menu-surface-2), 0.88);
       border-radius: 6px;
       overflow: hidden;
     }
@@ -184,10 +195,10 @@
       width: calc(100% - 8px);
       z-index: 0;
       pointer-events: none;
-      background: rgba(var(--menu-color), 0.55);
-      border: 1px solid rgba(var(--menu-color), 1);
+      background: rgba(var(--menu-color), 0.62);
+      border: 1px solid rgba(var(--menu-color-bright), 0.95);
       border-radius: 6px;
-      box-shadow: 0 0 8px rgba(var(--menu-color), 0.45);
+      box-shadow: 0 0 10px rgba(var(--menu-color-glow), 0.4);
       transition: top 0.2s ease, height 0.12s ease;
     }
 
@@ -284,8 +295,8 @@
     }
 
     .Checkbox.Checked {
-      background: rgba(var(--menu-color), 0.9);
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(var(--menu-color), 0.45);
+      background: rgba(var(--menu-color), 0.95);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.9), 0 0 10px rgba(var(--menu-color-glow), 0.5);
     }
 
     .Checkbox .Inside {
@@ -364,7 +375,8 @@
       width: 100%;
       height: 28px;
       margin-top: 4px;
-      background: #000;
+      background: rgb(var(--menu-surface));
+      border-top: 1px solid rgba(var(--menu-color-dark), 0.35);
       border-radius: 0 0 8px 8px;
       overflow: hidden;
       position: relative;
@@ -446,31 +458,31 @@
       width: 19vw;
       min-width: 260px;
       padding: 12px 14px;
-      background: rgba(0, 0, 0, 0.9);
-      border: 1px solid rgba(var(--menu-color), 0.85);
-      box-shadow: 0 0 8px rgba(var(--menu-color), 0.15);
+      background: rgba(var(--menu-surface), 0.95);
+      border: 1px solid rgba(var(--menu-color), 0.75);
+      box-shadow: 0 0 12px rgba(var(--menu-color-glow), 0.18);
       border-radius: 2px;
-      color: #fff;
+      color: rgb(var(--menu-text));
       animation: notifIn 0.35s ease forwards;
       position: relative;
       overflow: hidden;
     }
 
-    .Notification.error { border-color: rgba(255, 17, 0, 0.85); }
-    .Notification.info { border-color: rgba(39, 140, 255, 0.85); }
+    .Notification.error { border-color: rgba(var(--menu-error), 0.85); }
+    .Notification.info { border-color: rgba(var(--menu-info), 0.85); }
 
     .NotificationTitle {
       font-size: 13px;
       font-weight: 700;
-      color: rgb(var(--menu-color));
+      color: rgb(var(--menu-color-bright));
     }
 
-    .Notification.error .NotificationTitle { color: #ff4444; }
-    .Notification.info .NotificationTitle { color: #4da3ff; }
+    .Notification.error .NotificationTitle { color: rgb(var(--menu-error)); }
+    .Notification.info .NotificationTitle { color: rgb(var(--menu-info)); }
 
     .NotificationDesc {
       font-size: 11px;
-      color: #e5e5e5;
+      color: rgba(var(--menu-text), 0.82);
       margin-top: 4px;
     }
 
@@ -479,7 +491,7 @@
       left: 0;
       bottom: 0;
       height: 3px;
-      background: rgb(var(--menu-color));
+      background: linear-gradient(90deg, rgb(var(--menu-color-dark)), rgb(var(--menu-color-bright)));
       animation: notifProgress linear forwards;
     }
 
@@ -509,9 +521,10 @@
     .InputWrapper {
       width: 26vw;
       min-width: 320px;
-      background: #0a0a0a;
+      background: rgb(var(--menu-surface));
       border-radius: 4px;
       overflow: hidden;
+      border: 1px solid rgba(var(--menu-color-dark), 0.5);
     }
 
     .InputWrapper .Header {
@@ -519,24 +532,26 @@
       align-items: center;
       height: 26px;
       padding: 0 10px;
-      border-bottom: 1px solid rgb(var(--menu-color));
+      border-bottom: 1px solid rgba(var(--menu-color), 0.65);
+      background: rgba(var(--menu-surface-2), 0.95);
       font-size: 11px;
-      color: #fff;
+      color: rgb(var(--menu-text));
     }
 
     .InputWrapper .Body {
       padding: 14px;
-      background: #0f0f0f;
+      background: rgb(var(--menu-surface-2));
     }
 
     .InputWrapper .InsideCon {
-      background: #191919;
+      background: rgba(var(--menu-color-deep), 0.55);
       border-radius: 3px;
       padding: 10px 12px;
       font-size: 12px;
-      color: #fff;
+      color: rgb(var(--menu-text));
       min-height: 36px;
       word-break: break-all;
+      border: 1px solid rgba(var(--menu-color-dark), 0.25);
     }
 
     .KBLWrapper {
@@ -546,8 +561,8 @@
       transform: translateY(-50%);
       width: 14vw;
       min-width: 180px;
-      background: rgba(0, 0, 0, 0.85);
-      border: 1px solid rgba(var(--menu-color), 0.5);
+      background: rgba(var(--menu-surface), 0.92);
+      border: 1px solid rgba(var(--menu-color), 0.45);
       border-radius: 4px;
       display: none;
       z-index: 80;
@@ -558,8 +573,8 @@
     .KBLWrapper .Header {
       padding: 8px 10px;
       font-size: 11px;
-      color: rgb(var(--menu-color));
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      color: rgb(var(--menu-color-bright));
+      border-bottom: 1px solid rgba(var(--menu-color-dark), 0.35);
     }
 
     .Keybinds { padding: 6px; }
@@ -597,8 +612,8 @@
     .FCWrapper .Option.Selected {
       font-weight: 800;
       transform: scale(1.03);
-      color: rgb(0, 87, 48);
-      text-shadow: 0 0 8px rgba(0, 87, 48, 0.5);
+      color: rgb(var(--menu-color-bright));
+      text-shadow: 0 0 10px rgba(var(--menu-color-glow), 0.65);
     }
   </style>
 </head>
@@ -673,7 +688,7 @@
       maxVisible: 9,
       banner: {
         link: "https://i.postimg.cc/d069swYY/Christmas-Snowman-Color-Code-006741.png",
-        color: "0, 75, 30"
+        color: "239, 223, 101"
       }
     };
 
