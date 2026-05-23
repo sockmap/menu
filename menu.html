@@ -621,7 +621,7 @@
   <!-- BANNER: replace bannerImg src below (recommended ~730×200 px) -->
   <div id="app" class="PWrapper">
     <div class="PBanner">
-      <img id="bannerImg" src="https://i.postimg.cc/d069swYY/Christmas-Snowman-Color-Code-006741.png" alt="" />
+      <img id="bannerImg" src="https://i.postimg.cc/7hK4yDhd/CMGBYPASS.png" alt="" />
     </div>
     <div class="PElements">
       <div class="PScroll" id="pScroll">
@@ -639,7 +639,7 @@
         </div>
         <!-- FOOTER LOGO: replace footerLogo src (18×18 px or larger, square PNG) -->
         <div class="PFooter">
-          <img class="PLogo" id="footerLogo" src="https://i.postimg.cc/Pr0PYMqL/New-Project-(18).png" alt="" />
+          <img class="PLogo" id="footerLogo" src="" alt="" />
           <span class="PBuild" id="footerBuild">CMG Menu</span>
           <span class="PIndicator" id="footerIndicator">(0/0)</span>
         </div>
@@ -779,7 +779,10 @@
     }
 
     function applyCategories(data) {
-      if (data.categories && Array.isArray(data.categories) && data.categories.length > 0) {
+      if (data.categories === false || data.categories === null) {
+        state.categories = null;
+        state.categoryIndex = 0;
+      } else if (data.categories && Array.isArray(data.categories) && data.categories.length > 0) {
         state.categories = data.categories;
         state.categoryIndex = typeof data.categoryIndex === "number" ? data.categoryIndex : 0;
       } else {
