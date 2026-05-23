@@ -220,7 +220,8 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: calc(100% - 110px);
+      max-width: calc(100% - 130px);
+      padding-right: 4px;
       z-index: 1;
       pointer-events: none;
     }
@@ -236,19 +237,8 @@
       z-index: 2;
     }
 
-  /* Controls pinned to the right (matches FODO layout) */
-    .PTab > .Checkbox,
-    .PTab > .Slider,
-    .PTab > .Scrollable {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 2;
-      flex-shrink: 0;
-    }
-
-    .TOptions {
+    /* All row controls sit in TOptions, pinned right (same as Noclip) */
+    .PTab > .TOptions {
       position: absolute;
       right: 10px;
       top: 50%;
@@ -258,16 +248,15 @@
       justify-content: flex-end;
       gap: 8px;
       z-index: 2;
-      max-width: 45%;
+      width: auto;
+      max-width: 48%;
+      min-width: 0;
     }
 
     .TOptions .Checkbox,
     .TOptions .Slider,
     .TOptions .Scrollable {
       position: relative;
-      right: auto;
-      top: auto;
-      transform: none;
       flex-shrink: 0;
     }
 
@@ -827,21 +816,26 @@
           ch.className = "chevron";
           ch.textContent = "›";
           tab.appendChild(ch);
-        } else if (el.type === "checkbox") {
-          tab.appendChild(makeCheckbox(!!el.checked));
-        } else if (el.type === "slider") {
-          tab.appendChild(makeSlider(el));
-        } else if (el.type === "slider-checkbox") {
+        } else if (
+          el.type === "checkbox" ||
+          el.type === "slider" ||
+          el.type === "slider-checkbox" ||
+          el.type === "scrollable" ||
+          el.type === "scrollable-checkbox"
+        ) {
           const opt = document.createElement("div");
           opt.className = "TOptions";
-          opt.appendChild(makeSlider(el));
-          opt.appendChild(makeCheckbox(!!el.checked));
-          tab.appendChild(opt);
-        } else if (el.type === "scrollable" || el.type === "scrollable-checkbox") {
-          const opt = document.createElement("div");
-          opt.className = "TOptions";
-          opt.appendChild(makeScrollable(el));
-          if (el.type === "scrollable-checkbox") opt.appendChild(makeCheckbox(!!el.checked));
+          if (el.type === "checkbox") {
+            opt.appendChild(makeCheckbox(!!el.checked));
+          } else if (el.type === "slider") {
+            opt.appendChild(makeSlider(el));
+          } else if (el.type === "slider-checkbox") {
+            opt.appendChild(makeSlider(el));
+            opt.appendChild(makeCheckbox(!!el.checked));
+          } else {
+            opt.appendChild(makeScrollable(el));
+            if (el.type === "scrollable-checkbox") opt.appendChild(makeCheckbox(!!el.checked));
+          }
           tab.appendChild(opt);
         }
 
